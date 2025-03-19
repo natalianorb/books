@@ -1,0 +1,46 @@
+<p-card header="Create Author">
+  <form [formGroup]="authorForm" (ngSubmit)="onSubmit()">
+    <div class="field p-fluid">
+      <p-floatLabel>
+        <input id="name" type="text" pInputText formControlName="name" />
+        <label for="name">Name</label>
+      </p-floatLabel>
+      <small
+        *ngIf="
+          authorForm.get('name')?.invalid && authorForm.get('name')?.touched
+        "
+        class="p-error"
+      >
+        Name is required
+      </small>
+    </div>
+
+    <div class="field p-fluid">
+      <p-floatLabel>
+        <p-calendar id="calendar" formControlName="birthDate" dateFormat="dd.mm.yy" />
+
+        <label for="calendar">Birth date</label>
+      </p-floatLabel>
+    </div>
+
+    <div class="field p-fluid">
+      <p-floatLabel>
+        <textarea
+          id="biography"
+          pInputTextarea
+          formControlName="biography"
+          rows="5"
+        ></textarea>
+        <label for="biography">Biography</label>
+      </p-floatLabel>
+    </div>
+
+    <div class="flex justify-content-end">
+      <p-button
+        type="submit"
+        label="Save Author"
+        [disabled]="authorForm.invalid"
+      ></p-button>
+    </div>
+  </form>
+</p-card>
