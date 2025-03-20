@@ -1,0 +1,97 @@
+<p-toast></p-toast>
+<p-card header="Create Book">
+  <form [formGroup]="bookForm" (ngSubmit)="onSubmit()">
+    <div class="field p-fluid py-2">
+      <p-floatLabel>
+        <input id="title" type="text" pInputText formControlName="title" />
+        <label for="title">Title</label>
+      </p-floatLabel>
+      <small
+        *ngIf="bookForm.get('title')?.invalid && bookForm.get('title')?.touched"
+        class="p-error"
+      >
+        Title is required
+      </small>
+    </div>
+
+    <div class="field p-fluid py-2">
+      <p-floatLabel>
+        <p-multiSelect
+          id="authors"
+          [options]="authors"
+          formControlName="authorsIds"
+          optionLabel="name"
+          optionValue="id"
+          filterBy="name"
+          placeholder="Select authors"
+        />
+        <label for="authors">Author</label>
+      </p-floatLabel>
+      <small
+        *ngIf="
+          bookForm.get('authorsIds')?.invalid &&
+          bookForm.get('authorsIds')?.touched
+        "
+        class="p-error"
+      >
+        Author is required
+      </small>
+    </div>
+
+    <div class="field p-fluid py-2">
+      <p-floatLabel>
+        <textarea
+          id="description"
+          pInputTextarea
+          formControlName="description"
+          rows="5"
+        ></textarea>
+        <label for="description">Description</label>
+      </p-floatLabel>
+    </div>
+
+    <div class="field p-fluid py-2">
+      <p-floatLabel>
+        <p-inputNumber
+          id="pages"
+          formControlName="pages"
+          [min]="1"
+          [showButtons]="false"
+        ></p-inputNumber>
+        <label for="pages">Number of Pages</label>
+      </p-floatLabel>
+      <small
+        *ngIf="bookForm.get('pages')?.invalid && bookForm.get('pages')?.touched"
+        class="p-error"
+      >
+        Number of pages must be greater than 0
+      </small>
+    </div>
+
+    <div class="field p-fluid py-2">
+      <p-floatLabel>
+        <p-dropdown
+          id="language"
+          [options]="languages"
+          formControlName="language"
+        ></p-dropdown>
+        <label for="language">Language</label>
+      </p-floatLabel>
+    </div>
+
+    <div class="field p-fluid py-2">
+      <p-floatLabel>
+        <input id="genre" type="text" pInputText formControlName="genre" />
+        <label for="genre">Genre</label>
+      </p-floatLabel>
+    </div>
+
+    <div class="flex justify-content-end">
+      <p-button
+        type="submit"
+        label="Save Book"
+        [disabled]="bookForm.invalid"
+      ></p-button>
+    </div>
+  </form>
+</p-card>
