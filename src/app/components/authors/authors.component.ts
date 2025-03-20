@@ -20,11 +20,11 @@ import { CreateAuthorComponent } from '../create-author/create-author.component'
     DialogModule,
     ConfirmDialogModule,
     ToastModule,
-    CreateAuthorComponent
+    CreateAuthorComponent,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './authors.component.html',
-  styleUrls: ['./authors.component.scss']
+  styleUrls: ['./authors.component.scss'],
 })
 export class AuthorsComponent implements OnInit {
   authors: Author[] = [];
@@ -47,7 +47,7 @@ export class AuthorsComponent implements OnInit {
     });
   }
 
-  openNew(): void {
+  openAuthorCreation(): void {
     this.selectedAuthor = null;
     this.displayDialog = true;
   }
@@ -72,7 +72,7 @@ export class AuthorsComponent implements OnInit {
             life: 3000
           });
         }
-      }
+      },
     });
   }
 
@@ -97,7 +97,7 @@ export class AuthorsComponent implements OnInit {
     this.displayDialog = false;
   }
 
-  hideDialog(): void {
+  hideAuthorCreation(): void {
     this.displayDialog = false;
   }
 }

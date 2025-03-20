@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CardModule } from 'primeng/card';
@@ -25,7 +25,7 @@ import { Author } from '../../models/author.model';
   templateUrl: './create-author.component.html',
   styleUrls: ['./create-author.component.scss'],
 })
-export class CreateAuthorComponent implements OnInit {
+export class CreateAuthorComponent implements OnChanges {
   @Input() author: Author | null = null;
   @Output() save = new EventEmitter<Author>();
   @Output() cancel = new EventEmitter<void>();
@@ -35,12 +35,14 @@ export class CreateAuthorComponent implements OnInit {
 
   constructor(private fb: FormBuilder) {}
 
-  ngOnInit(): void {
+  ngOnChanges(): void {
     this.initForm();
 
     if (this.author) {
       this.isEditMode = true;
       this.authorForm.patchValue(this.author);
+    } else {
+      this.isEditMode = false;
     }
   }
 
@@ -48,8 +50,6 @@ export class CreateAuthorComponent implements OnInit {
     this.authorForm = this.fb.group({
       id: [null],
       name: ['', Validators.required],
-      birthDate: [''],
-      biography: ['']
     });
   }
 

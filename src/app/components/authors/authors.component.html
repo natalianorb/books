@@ -1,4 +1,4 @@
-<div class="card">
+<div class="authors">
   <p-toast></p-toast>
   <p-confirmDialog></p-confirmDialog>
 
@@ -7,34 +7,27 @@
     <p-button
       label="New Author"
       icon="pi pi-plus"
-      (click)="openNew()"
+      styleClass="p-button-success"
+      (click)="openAuthorCreation()"
     ></p-button>
   </div>
 
   <p-table
     [value]="authors"
     [tableStyle]="{ 'min-width': '50rem' }"
-    [paginator]="true"
-    [rows]="10"
+    [paginator]="false"
     styleClass="p-datatable-gridlines"
     [rowHover]="true"
   >
     <ng-template pTemplate="header">
       <tr>
         <th>Name</th>
-        <th>Birth Date</th>
-        <th>Biography</th>
         <th style="width: 10rem">Actions</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-author>
       <tr>
         <td>{{ author.name }}</td>
-        <td>{{ author.birthDate | date }}</td>
-        <td>
-          {{ author.biography | slice : 0 : 100
-          }}{{ author.biography?.length > 100 ? "..." : "" }}
-        </td>
         <td>
           <div class="flex gap-2">
             <button
@@ -68,14 +61,13 @@
 <p-dialog
   [(visible)]="displayDialog"
   [style]="{ width: '450px' }"
-  [header]="selectedAuthor ? 'Edit Author' : 'New Author'"
   [modal]="true"
   styleClass="p-fluid py-2"
 >
   <app-create-author
     [author]="selectedAuthor"
     (save)="saveAuthor($event)"
-    (cancel)="hideDialog()"
+    (cancel)="hideAuthorCreation()"
   >
   </app-create-author>
 </p-dialog>
