@@ -1,6 +1,6 @@
 <p-card [header]="isEditMode ? 'Edit Author' : 'Create Author'">
   <form [formGroup]="authorForm" (ngSubmit)="onSubmit()">
-    <div class="field p-fluid">
+    <div class="field p-fluid py-2">
       <p-floatLabel>
         <input id="name" type="text" pInputText formControlName="name" />
         <label for="name">Name</label>
@@ -15,7 +15,7 @@
       </small>
     </div>
 
-    <div class="field p-fluid">
+    <div class="field p-fluid py-2">
       <p-floatLabel>
         <p-calendar id="calendar" formControlName="birthDate" dateFormat="dd.mm.yy" />
 
@@ -23,7 +23,7 @@
       </p-floatLabel>
     </div>
 
-    <div class="field p-fluid">
+    <div class="field p-fluid py-2">
       <p-floatLabel>
         <textarea
           id="biography"
