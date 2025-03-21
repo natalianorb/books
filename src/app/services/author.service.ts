@@ -7,8 +7,8 @@ import { Author } from '../models/author.model';
 })
 export class AuthorService {
   private authors: Author[] = [
-    { id: 1, name: 'J.K. Rowling' },
-    { id: 2, name: 'George R.R. Martin' },
+    { id: 1, name: 'Rowling' },
+    { id: 2, name: 'George Martin' },
   ];
 
   private authorsSubject = new BehaviorSubject<Author[]>(this.authors);

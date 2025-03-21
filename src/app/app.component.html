@@ -1,1 +1,15 @@
-<router-outlet />
+<nav class="navbar">
+  <div class="container">
+    <div class="navbar-brand">
+      <h1>Book Library</h1>
+    </div>
+    <div class="navbar-menu">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Books</a>
+      <a routerLink="/authors" routerLinkActive="active">Authors</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <router-outlet></router-outlet>
+</main>

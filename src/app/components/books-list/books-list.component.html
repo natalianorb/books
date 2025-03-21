@@ -1,0 +1,158 @@
+<p-toast></p-toast>
+
+<div class="container">
+  <h1>Books List</h1>
+
+  <p-card styleClass="mb-4">
+    <ng-template pTemplate="title">
+      <div class="flex justify-content-between align-items-center">
+        <span>Filters</span>
+        <p-button
+          label="Reset Filters"
+          icon="pi pi-filter-slash"
+          (onClick)="resetFilters()"
+          styleClass="p-button-outlined"
+        ></p-button>
+      </div>
+    </ng-template>
+
+    <form [formGroup]="filterForm">
+      <div class="grid">
+        <div class="col-12 md:col-6 lg:col-3">
+          <span class="p-float-label mb-4">
+            <input
+              id="search"
+              type="text"
+              pInputText
+              formControlName="search"
+              class="w-full"
+            />
+            <label for="search">Search in title & description</label>
+          </span>
+        </div>
+
+        <div class="col-12 md:col-6 lg:col-3">
+          <span class="p-float-label mb-4">
+            <p-multiSelect
+              id="authors"
+              [options]="authors"
+              formControlName="authorsIds"
+              optionLabel="name"
+              optionValue="id"
+              [filter]="false"
+              placeholder="Select Authors"
+              [showToggleAll]="true"
+              styleClass="w-full"
+            >
+            </p-multiSelect>
+            <label for="authors">Authors</label>
+          </span>
+        </div>
+
+        <div class="col-12 md:col-6 lg:col-3">
+          <label for="pages" class="block mb-2"
+            >Pages: {{ filterForm.get("pages")?.value[0] }} -
+            {{ filterForm.get("pages")?.value[1] }}</label
+          >
+          <p-slider
+            id="pages"
+            formControlName="pages"
+            [range]="true"
+            [min]="0"
+            [max]="1000"
+            styleClass="w-full"
+          >
+          </p-slider>
+        </div>
+
+        <div class="col-12 md:col-6 lg:col-3">
+          <span class="p-float-label mb-4">
+            <p-dropdown
+              id="genre"
+              [options]="genres"
+              formControlName="genre"
+              optionLabel="name"
+              optionValue="code"
+              [showClear]="true"
+              placeholder="Select Genre"
+              styleClass="w-full"
+            >
+            </p-dropdown>
+            <label for="genre">Genre</label>
+          </span>
+        </div>
+      </div>
+    </form>
+  </p-card>
+
+  <div class="flex justify-content-end mb-3">
+    <p-button
+      label="New Book"
+      icon="pi pi-plus"
+      routerLink="/"
+      styleClass="p-button-success"
+      (click)="openBookDialog(null)"
+    >
+    </p-button>
+  </div>
+
+  <p-table
+    [value]="books"
+    [paginator]="false"
+    [rows]="pageSize"
+    [showCurrentPageReport]="false"
+    [loading]="loading"
+    styleClass="p-datatable-gridlines"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Pages</th>
+        <th>Language</th>
+        <th>Genre</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-book>
+      <tr (click)="openBookDialog(book)">
+        <td>
+          <span class="font-bold">{{ book.title }}</span>
+        </td>
+        <td>{{ book.author.name }}</td>
+        <td>{{ book.pages }}</td>
+        <td>{{ book.language }}</td>
+        <td>{{ book.genre }}</td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5" class="text-center p-4">
+          <div class="flex flex-column align-items-center">
+            <i class="pi pi-book text-6xl text-gray-400 mb-3"></i>
+            <span class="text-xl font-semibold">No books found</span>
+            <p class="text-gray-600">
+              Try adjusting your filters or add a new book.
+            </p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-dialog
+    [visible]="displayDialog"
+    (visibleChange)="$event? false: hideBookDialog()"
+    [style]="{ width: '450px' }"
+    [header]="selectedBook? 'Book Details': 'New Book'"
+    [modal]="true"
+    styleClass="p-fluid"
+  >
+    @if (selectedBook) {
+    <app-book-details [book]="selectedBook" (close)="hideBookDialog()" />
+    } @else {
+    <app-create-book (save)="saveBook($event)" (cancel)="hideBookDialog()" />
+    }
+  </p-dialog>
+</div>
