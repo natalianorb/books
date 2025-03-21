@@ -1,0 +1,19 @@
+<div class="book-details-container">
+  <p-card [header]="book.title" styleClass="p-card-shadow">
+    <div class="book-content">
+      <div class="book-info">
+        <p><strong>Author: </strong> {{ book.author.name }}</p>
+        <p><strong>Language: </strong> {{ book.language }}</p>
+        <p><strong>Pages: </strong> {{ book.pages }}</p>
+        <p><strong>Genre: </strong> {{ book.genre }}</p>
+      </div>
+
+      <p-divider></p-divider>
+
+      <div class="book-description">
+        <h3>Description</h3>
+        <p>{{ book.description }}</p>
+      </div>
+    </div>
+  </p-card>
+</div>

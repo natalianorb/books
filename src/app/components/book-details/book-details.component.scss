@@ -1,0 +1,35 @@
+.book-details-container {
+  max-width: 800px;
+  padding: 0 1rem;
+}
+
+.book-info {
+  margin-bottom: 1rem;
+  font-size: 14px;
+
+  p {
+    margin: 0.5rem 0;
+  }
+}
+
+.book-description {
+  h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+  }
+
+  p {
+    line-height: 1.6;
+  }
+}
+
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.not-found {
+  text-align: center;
+}
