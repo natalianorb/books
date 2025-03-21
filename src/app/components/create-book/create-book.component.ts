@@ -1,7 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
@@ -12,9 +16,11 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { Author } from '../../models/author.model';
 import { AuthorService } from '../../services/author.service';
-import { Book, BookService } from '../../services/book.service';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { Book } from '../../models/book.model';
+import { GenresService } from '../../services/genres.service';
+import { Genre } from '../../models/genre.model';
 
 @Component({
   selector: 'app-create-book',
@@ -22,7 +28,6 @@ import { MultiSelectModule } from 'primeng/multiselect';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    RouterLink,
     CardModule,
     FloatLabelModule,
     InputTextModule,
@@ -38,7 +43,9 @@ import { MultiSelectModule } from 'primeng/multiselect';
   styleUrls: ['./create-book.component.scss'],
 })
 export class CreateBookComponent implements OnInit {
+  @Output() save = new EventEmitter<Book>();
   bookForm!: FormGroup;
+  genres: Genre[] = [];
   authors: Author[] = [];
   languages: string[] = [
     'English',
@@ -66,24 +73,30 @@ export class CreateBookComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authorService: AuthorService,
-    private bookService: BookService,
-    private messageService: MessageService
+    private genresService: GenresService
   ) {}
 
   ngOnInit(): void {
     this.initForm();
     this.loadAuthors();
+    this.setupGenres();
   }
 
   initForm(): void {
     this.bookForm = this.fb.group({
       title: ['', Validators.required],
-      authorsIds: [[], Validators.required],
+      author: ['', Validators.required],
       description: [''],
       pages: [0, [Validators.min(1)]],
       language: ['Russian', Validators.required],
       genre: [''],
     });
+  }
+
+  setupGenres(): void {
+    this.genresService
+      .getGenres()
+      .subscribe((genres) => (this.genres = genres));
   }
 
   loadAuthors(): void {
@@ -94,15 +107,7 @@ export class CreateBookComponent implements OnInit {
 
   onSubmit(): void {
     if (this.bookForm.valid) {
-      const book: Book = this.bookForm.value;
-      this.bookService.addBook(book);
-
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: `Book "${book.title}" has been created successfully`,
-        life: 3000,
-      });
+      this.save.emit(this.bookForm.value);
 
       this.bookForm.reset({
         language: 'Russian',

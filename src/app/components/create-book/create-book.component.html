@@ -17,20 +17,19 @@
     <div class="field p-fluid py-2">
       <p-floatLabel>
         <p-multiSelect
-          id="authors"
+          id="author"
           [options]="authors"
-          formControlName="authorsIds"
+          formControlName="author"
           optionLabel="name"
           optionValue="id"
           filterBy="name"
           placeholder="Select authors"
         />
-        <label for="authors">Author</label>
+        <label for="author">Author</label>
       </p-floatLabel>
       <small
         *ngIf="
-          bookForm.get('authorsIds')?.invalid &&
-          bookForm.get('authorsIds')?.touched
+          bookForm.get('author')?.invalid && bookForm.get('author')?.touched
         "
         class="p-error"
       >
@@ -81,7 +80,13 @@
 
     <div class="field p-fluid py-2">
       <p-floatLabel>
-        <input id="genre" type="text" pInputText formControlName="genre" />
+        <p-dropdown
+          id="genre"
+          [options]="genres"
+          formControlName="genre"
+          optionLabel="name"
+          placeholder="Select a City"
+        />
         <label for="genre">Genre</label>
       </p-floatLabel>
     </div>
