@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, timer, map, tap } from 'rxjs';
 import { Book, BookFilter } from '../models/book.model';
+import { Genre } from '../models/genre.model';
 
 @Injectable({
   providedIn: 'root',
@@ -73,48 +74,50 @@ export class BookService {
 
   // imitating http response
   getMockBooks(filter: BookFilter = {}): Observable<Book[]> {
-    // Mock data
-    const mockBooks: Book[] = [
-      {
-        id: 1,
-        title: 'Harry Potter',
-        author: { id: 1, name: 'Rowling' },
-        description: 'Wizard story',
-        genre: 'Fantasy',
-        language: 'English',
-        pages: 350,
-      },
-      {
-        id: 2,
-        title: 'Game of Thrones',
-        author: { id: 2, name: 'George Martin' },
-        description: 'Epic fantasy series',
-        genre: 'Fantasy',
-        language: 'English',
-        pages: 800,
-      },
-      {
-        id: 3,
-        title: 'The Hobbit',
-        author: {
-          name: 'Tolkien',
-          id: 3,
-        },
-        description: 'Adventure of Bilbo Baggins',
-        genre: 'Fantasy',
-        language: 'English',
-        pages: 300,
-      },
-      {
-        id: 4,
-        title: 'Crime and Punishment',
-        author: { name: 'Dostoevsky', id: 4 },
-        description: 'Psychological novel',
-        genre: 'Classic',
-        language: 'Russian',
-        pages: 500,
-      },
-    ];
+    /* return existing books if they are already loaded, mock data otherwise */
+    const mockBooks: Book[] = this.books.length
+      ? this.books
+      : [
+          {
+            id: 1,
+            title: 'Harry Potter',
+            author: { id: 1, name: 'Rowling' },
+            description: 'Wizard story',
+            genre: 'Fantasy' as Genre,
+            language: 'English',
+            pages: 350,
+          },
+          {
+            id: 2,
+            title: 'Game of Thrones',
+            author: { id: 2, name: 'George Martin' },
+            description: 'Epic fantasy series',
+            genre: 'Fantasy' as Genre,
+            language: 'English',
+            pages: 800,
+          },
+          {
+            id: 3,
+            title: 'The Hobbit',
+            author: {
+              name: 'Tolkien',
+              id: 3,
+            },
+            description: 'Adventure of Bilbo Baggins',
+            genre: 'Fantasy' as Genre,
+            language: 'English',
+            pages: 300,
+          },
+          {
+            id: 4,
+            title: 'Crime and Punishment',
+            author: { name: 'Dostoevsky', id: 4 },
+            description: 'Psychological novel',
+            genre: 'Classic' as Genre,
+            language: 'Russian',
+            pages: 500,
+          },
+        ];
 
     return timer(300).pipe(
       // Simulate network delay

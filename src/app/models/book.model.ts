@@ -1,4 +1,5 @@
 import { Author } from './author.model';
+import { Genre } from './genre.model';
 
 export interface Book {
   id: number;
@@ -7,7 +8,7 @@ export interface Book {
   author: Author;
   language: string;
   pages: number;
-  genre: string;
+  genre: Genre;
 }
 
 export interface BookFilter {
@@ -15,5 +16,5 @@ export interface BookFilter {
   authorsIds?: number[];
   minPages?: number;
   maxPages?: number;
-  genre?: string;
+  genre?: Genre;
 }

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  FormBuilder,
+  FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
@@ -21,6 +21,15 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { Book } from '../../models/book.model';
 import { GenresService } from '../../services/genres.service';
 import { Genre } from '../../models/genre.model';
+
+interface BookForm {
+  title: FormControl<string>;
+  author: FormControl<Author | null>;
+  description: FormControl<string>;
+  pages: FormControl<number>;
+  language: FormControl<string>;
+  genre: FormControl<Genre | null>;
+}
 
 @Component({
   selector: 'app-create-book',
@@ -71,9 +80,8 @@ export class CreateBookComponent implements OnInit {
   ];
 
   constructor(
-    private fb: FormBuilder,
     private authorService: AuthorService,
-    private genresService: GenresService
+    private genresService: GenresService,
   ) {}
 
   ngOnInit(): void {
@@ -83,16 +91,26 @@ export class CreateBookComponent implements OnInit {
   }
 
   initForm(): void {
-    this.bookForm = this.fb.group({
-      title: ['', Validators.required],
-      author: ['', Validators.required],
-      description: [''],
-      pages: [0, [Validators.min(1)]],
-      language: ['Russian', Validators.required],
-      genre: [''],
+    this.bookForm = new FormGroup<BookForm>({
+      title: new FormControl('', {
+        nonNullable: true,
+        validators: Validators.required,
+      }),
+      author: new FormControl(null, Validators.required),
+      description: new FormControl('', {
+        nonNullable: true,
+      }),
+      pages: new FormControl(0, {
+        nonNullable: true,
+        validators: Validators.min(1),
+      }),
+      language: new FormControl('', {
+        nonNullable: true,
+        validators: Validators.required,
+      }),
+      genre: new FormControl(null, Validators.required),
     });
   }
-
   setupGenres(): void {
     this.genresService
       .getGenres()
@@ -109,9 +127,7 @@ export class CreateBookComponent implements OnInit {
     if (this.bookForm.valid) {
       this.save.emit(this.bookForm.value);
 
-      this.bookForm.reset({
-        language: 'Russian',
-      });
+      this.bookForm.reset();
     }
   }
 }

@@ -16,14 +16,13 @@
 
     <div class="field p-fluid py-2">
       <p-floatLabel>
-        <p-multiSelect
+        <p-dropdown
           id="author"
           [options]="authors"
           formControlName="author"
           optionLabel="name"
-          optionValue="id"
           filterBy="name"
-          placeholder="Select authors"
+          placeholder="Select author"
         />
         <label for="author">Author</label>
       </p-floatLabel>
@@ -84,8 +83,7 @@
           id="genre"
           [options]="genres"
           formControlName="genre"
-          optionLabel="name"
-          placeholder="Select a City"
+          placeholder="Select a genre"
         />
         <label for="genre">Genre</label>
       </p-floatLabel>
