@@ -6,6 +6,7 @@ import { Author } from '../models/author.model';
   providedIn: 'root'
 })
 export class AuthorService {
+  /* this is a mock of the real service */
   private authors: Author[] = [
     { id: 1, name: 'Rowling' },
     { id: 2, name: 'George Martin' },
@@ -17,10 +18,6 @@ export class AuthorService {
 
   getAuthors(): Observable<Author[]> {
     return this.authorsSubject.asObservable();
-  }
-
-  getAuthorById(id: number): Author | undefined {
-    return this.authors.find(author => author.id === id);
   }
 
   addAuthor(author: Author): void {
