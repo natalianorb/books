@@ -79,11 +79,13 @@ export class BookService {
     }
 
     return {
-      ...book,
+      id: book.id,
+      title: book.title,
+      pages: book.pages,
       author: { id: book.author_id, name: author.name },
-      description: 'asd',
-      genre: 'Fiction' as Genre,
-      language: 'Russian',
+      description: book.description,
+      genre: book.genre as Genre,
+      language: book.language,
     };
   }
 }

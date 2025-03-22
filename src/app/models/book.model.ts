@@ -14,8 +14,11 @@ export interface Book {
 export interface BookDTO {
   id: string;
   title: string;
+  description: string;
   author_id: string;
+  language: string;
   pages: number;
+  genre: string;
 }
 
 
