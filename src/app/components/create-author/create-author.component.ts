@@ -1,6 +1,18 @@
-import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { CalendarModule } from 'primeng/calendar';
@@ -30,27 +42,21 @@ export class CreateAuthorComponent implements OnChanges {
   @Output() save = new EventEmitter<Author>();
   @Output() cancel = new EventEmitter<void>();
 
-  authorForm!: FormGroup;
+  authorForm: FormGroup = new FormGroup({
+    id: new FormControl(null),
+    name: new FormControl('', Validators.required),
+  });
   isEditMode = false;
 
   constructor(private fb: FormBuilder) {}
 
   ngOnChanges(): void {
-    this.initForm();
-
     if (this.author) {
       this.isEditMode = true;
       this.authorForm.patchValue(this.author);
     } else {
       this.isEditMode = false;
     }
-  }
-
-  initForm(): void {
-    this.authorForm = this.fb.group({
-      id: [null],
-      name: ['', Validators.required],
-    });
   }
 
   onSubmit(): void {
