@@ -111,6 +111,7 @@ export class CreateBookComponent implements OnInit {
       genre: new FormControl(null, Validators.required),
     });
   }
+
   setupGenres(): void {
     this.genresService
       .getGenres()
@@ -118,7 +119,7 @@ export class CreateBookComponent implements OnInit {
   }
 
   loadAuthors(): void {
-    this.authorService.getAuthors().subscribe((authors) => {
+    this.authorService.loadAuthors().subscribe((authors) => {
       this.authors = authors;
     });
   }

@@ -2,7 +2,7 @@ import { Author } from './author.model';
 import { Genre } from './genre.model';
 
 export interface Book {
-  id: number;
+  id: string;
   title: string;
   description: string;
   author: Author;
@@ -11,9 +11,17 @@ export interface Book {
   genre: Genre;
 }
 
+export interface BookDTO {
+  id: string;
+  title: string;
+  author_id: string;
+  pages: number;
+}
+
+
 export interface BookFilter {
   search?: string;
-  authorsIds?: number[];
+  authorsIds?: string[];
   minPages?: number;
   maxPages?: number;
   genre?: Genre;

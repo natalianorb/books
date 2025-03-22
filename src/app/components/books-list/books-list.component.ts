@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule, FormControl} from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -13,7 +13,7 @@ import { MessageService } from 'primeng/api';
 import { RouterLink } from '@angular/router';
 import { DialogModule } from 'primeng/dialog';
 
-import { Book, BookFilter } from '../../models/book.model';
+import { Book, BookDTO, BookFilter } from '../../models/book.model';
 import { Author } from '../../models/author.model';
 import { Genre } from '../../models/genre.model';
 import { BookService } from '../../services/book.service';
@@ -21,7 +21,15 @@ import { AuthorService } from '../../services/author.service';
 import { CreateBookComponent } from '../create-book/create-book.component';
 import { debounceTime } from 'rxjs';
 import { GenresService } from '../../services/genres.service';
-import { BookDetailsComponent } from "../book-details/book-details.component";
+import { BookDetailsComponent } from '../book-details/book-details.component';
+
+interface BookFilterForm {
+  search: FormControl<string>;
+  authorsIds: FormControl<string[]>;
+  pages: FormControl<number[]>;
+  genre: FormControl<Genre | undefined>;
+}
+
 
 @Component({
   selector: 'app-books-list',
@@ -40,8 +48,8 @@ import { BookDetailsComponent } from "../book-details/book-details.component";
     ToastModule,
     RouterLink,
     CreateBookComponent,
-    BookDetailsComponent
-],
+    BookDetailsComponent,
+  ],
   providers: [MessageService],
   templateUrl: './books-list.component.html',
   styleUrl: './books-list.component.scss',
@@ -50,7 +58,12 @@ export class BooksListComponent implements OnInit {
   books: Book[] = [];
   authors: Author[] = [];
   genres: Genre[] = [];
-  filterForm: FormGroup;
+  filterForm = new FormGroup<BookFilterForm>({
+    search: new FormControl('', { nonNullable: true }),
+    authorsIds: new FormControl([] as string[], { nonNullable: true }),
+    pages: new FormControl([0, 1000], { nonNullable: true }),
+    genre: new FormControl(undefined, { nonNullable: true }),
+  });
   selectedBook: Book | null = null;
   displayDialog = false;
   loading = false;
@@ -60,36 +73,31 @@ export class BooksListComponent implements OnInit {
     private genresService: GenresService,
     private bookService: BookService,
     private authorService: AuthorService,
-    private fb: FormBuilder,
     private messageService: MessageService
-  ) {
-    this.filterForm = this.fb.group({
-      search: [''],
-      authorsIds: [[]],
-      pages: [[0, 1000]],
-      genre: [null],
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
     this.loadAuthors();
     this.setupGenres();
-    this.loadBooks();
+    this.findBooks();
 
-    this.filterForm.valueChanges.pipe(debounceTime(1800)).subscribe(() => {
-      this.loadBooks();
+    this.filterForm.valueChanges.pipe(debounceTime(1500)).subscribe(() => {
+      this.findBooks();
     });
   }
 
   saveBook(book: Book): void {
-    this.bookService.saveBook(book).subscribe({
+    const bookDto: BookDTO = {
+      ...book,
+      author_id: book.author.id,
+    };
+    this.bookService.createBook(bookDto).subscribe({
       next: () => {
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
           detail: 'Book saved successfully',
         });
-        this.loadBooks();
       },
       error: (error) => {
         this.messageService.add({
@@ -99,12 +107,15 @@ export class BooksListComponent implements OnInit {
         });
         console.error('Error saving book', error);
       },
-      complete: () => this.hideBookDialog(),
+      complete: () => {
+        this.hideBookDialog();
+        this.findBooks();
+      },
     });
   }
 
   loadAuthors(): void {
-    this.authorService.getAuthors().subscribe({
+    this.authorService.loadAuthors().subscribe({
       next: (authors) => {
         this.authors = authors;
       },
@@ -125,19 +136,19 @@ export class BooksListComponent implements OnInit {
       .subscribe((genres) => (this.genres = genres));
   }
 
-  loadBooks(): void {
+  findBooks(): void {
     this.loading = true;
     const formValues = this.filterForm.value;
 
     const filter: BookFilter = {
       search: formValues.search,
       authorsIds: formValues.authorsIds,
-      minPages: formValues.pages[0],
-      maxPages: formValues.pages[1],
+      minPages: formValues.pages?.[0] ?? 0,
+      maxPages: formValues.pages?.[1] ?? 0,
       genre: formValues.genre,
     };
 
-    this.bookService.getBooks(filter).subscribe({
+    this.bookService.loadBooks(filter).subscribe({
       next: (books) => {
         this.books = books;
         this.loading = false;
@@ -153,7 +164,6 @@ export class BooksListComponent implements OnInit {
       },
     });
   }
-
   openBookDialog(book: Book | null): void {
     this.selectedBook = book;
     this.displayDialog = true;
@@ -169,7 +179,7 @@ export class BooksListComponent implements OnInit {
       search: '',
       authorsIds: [],
       pages: [0, 1000],
-      genre: null,
+      genre: undefined,
     });
   }
 }

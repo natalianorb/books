@@ -1,69 +1,89 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Observable, timer, map, tap } from 'rxjs';
-import { Book, BookFilter } from '../models/book.model';
+import { Observable, map, switchMap } from 'rxjs';
+import { Book, BookDTO, BookFilter } from '../models/book.model';
+import { AuthorService } from './author.service';
+import { Genre } from '../models/genre.model';
+import { Author } from '../models/author.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BookService {
-  private apiUrl = 'http://localhost:3000/books'; // here should be the link to your backend API
-  private books: Book[] = [];
-  private booksSubject = new BehaviorSubject<Book[]>(this.books);
+  private apiUrl = '/api/books';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authorService: AuthorService) {}
 
-  getBooks(filter: BookFilter = {}): Observable<Book[]> {
+  loadBooks(filter: BookFilter = {}): Observable<Book[]> {
     let params = new HttpParams();
 
     if (filter.search) {
-      params = params.set('query', filter.search);
+      params = params.set('title', filter.search);
       params = params.set('description', filter.search);
     }
 
     if (filter.authorsIds && filter.authorsIds.length > 0) {
-      params = params.append('authorsIds', filter.authorsIds.toString());
+      params = params.append('author_id', filter.authorsIds.toString());
     }
 
     if (filter.minPages) {
-      params = params.set('minPages', filter.minPages.toString());
+      params = params.set('pages_gte', filter.minPages.toString());
     }
 
     if (filter.maxPages) {
-      params = params.set('maxPages', filter.maxPages.toString());
+      params = params.set('pages_lte', filter.maxPages.toString());
     }
 
     if (filter.genre) {
       params = params.set('genre', filter.genre);
     }
 
-    return this.http.get<Book[]>(this.apiUrl, { params });
-  }
-
-  saveBook(book: Book): Observable<Book> {
-    return timer(300).pipe(
-      // imitation of http request
-      map(() => {
-        const newId = Date.now(); // new id should be generated at backend
-        const newBook = { ...book, id: newId };
-        return newBook;
+    return this.http.get<BookDTO[]>(this.apiUrl, { params }).pipe(
+      switchMap((books) => {
+        const authorsIds = books.map((book) => book.author_id);
+        return this.authorService.getAuthorsByIds(authorsIds).pipe(
+          map((authors) => {
+            return books.map((book) => {
+              const foundAuthor = authors.find(
+                (author) => author.id === book.author_id
+              );
+              return this.transformToBook(book, foundAuthor!);
+            });
+          })
+        );
       }),
-      tap((newBook) => this.addBook(newBook)) // redundant code if we use real http request
     );
   }
 
-  addBook(book: Book): void {
-    const books = [...this.books, book];
-    this.updateLocalBooks(books);
+  createBook(book: Omit<BookDTO, 'id'>): Observable<Book> {
+    return this.http.post<BookDTO>(this.apiUrl, book).pipe(
+      switchMap((newBook) => {
+        return this.authorService.getAuthorsByIds([newBook.author_id]).pipe(
+          map((authors) => {
+            const foundAuthor = authors.find(
+              (author) => author.id === newBook.author_id
+            );
+            return this.transformToBook(newBook, foundAuthor!);
+          })
+        );
+      }),
+    );
   }
 
-  deleteBook(id: number): void {
-    const filtered = this.books.filter((book) => book.id !== id);
-    this.updateLocalBooks(filtered);
-  }
+  transformToBook(book: BookDTO, author: Author): Book {
+    if (!author) {
+      throw new Error('Author not found for the provided ID.');
+    }
+    if (book.author_id !== author.id) {
+      throw new Error('Author ID does not match the provided author.');
+    }
 
-  updateLocalBooks(books: Book[]) {
-    this.books = books;
-    this.booksSubject.next(this.books);
+    return {
+      ...book,
+      author: { id: book.author_id, name: author.name },
+      description: 'asd',
+      genre: 'Fiction' as Genre,
+      language: 'Russian',
+    };
   }
 }

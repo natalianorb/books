@@ -51,8 +51,8 @@
 
         <div class="col-12 md:col-6 lg:col-3">
           <label for="pages" class="block mb-2"
-            >Pages: {{ filterForm.get("pages")?.value[0] }} -
-            {{ filterForm.get("pages")?.value[1] }}</label
+            >Pages: {{ filterForm.get("pages")!.value[0] }} -
+            {{ filterForm.get("pages")!.value[1] }}</label
           >
           <p-slider
             id="pages"
@@ -71,8 +71,6 @@
               id="genre"
               [options]="genres"
               formControlName="genre"
-              optionLabel="name"
-              optionValue="code"
               [showClear]="true"
               placeholder="Select Genre"
               styleClass="w-full"
