@@ -15,17 +15,4 @@ import { Book } from '../../models/book.model';
 })
 export class BookDetailsComponent {
   @Input() book!: Book;
-
-  getGenreSeverity(genre: string): string {
-    const genreSeverityMap: { [key: string]: string } = {
-      Fantasy: 'info',
-      'Science Fiction': 'warning',
-      Mystery: 'danger',
-      Romance: 'success',
-      Classic: 'secondary',
-      // todo Add more genres as needed
-    };
-
-    return genreSeverityMap[genre] || 'info';
-  }
 }
