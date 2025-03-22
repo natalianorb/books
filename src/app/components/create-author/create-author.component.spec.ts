@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CreateAuthorComponent } from './create-author.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MessageService } from 'primeng/api';
 
 describe('CreateAuthorComponent', () => {
   let component: CreateAuthorComponent;
@@ -8,10 +10,11 @@ describe('CreateAuthorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CreateAuthorComponent]
+      imports: [CreateAuthorComponent, HttpClientTestingModule],
+      providers: [MessageService],
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(CreateAuthorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
