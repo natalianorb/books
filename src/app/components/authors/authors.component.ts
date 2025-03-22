@@ -9,6 +9,7 @@ import { ToastModule } from 'primeng/toast';
 import { Author } from '../../models/author.model';
 import { AuthorService } from '../../services/author.service';
 import { CreateAuthorComponent } from '../create-author/create-author.component';
+import { tap } from 'rxjs';
 
 @Component({
   selector: 'app-authors',
@@ -30,6 +31,7 @@ export class AuthorsComponent implements OnInit {
   authors: Author[] = [];
   selectedAuthor: Author | null = null;
   displayDialog = false;
+  loading = false;
 
   constructor(
     private authorService: AuthorService,
@@ -38,11 +40,11 @@ export class AuthorsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadAuthors();
+    this.onAuthorsChange();
   }
 
-  loadAuthors(): void {
-    this.authorService.getAuthors().subscribe(authors => {
+  onAuthorsChange() {
+    this.authorService.loadAuthors().subscribe((authors) => {
       this.authors = authors;
     });
   }
@@ -52,7 +54,7 @@ export class AuthorsComponent implements OnInit {
     this.displayDialog = true;
   }
 
-  editAuthor(author: Author): void {
+  openAuthorEdit(author: Author): void {
     this.selectedAuthor = { ...author };
     this.displayDialog = true;
   }
@@ -62,39 +64,37 @@ export class AuthorsComponent implements OnInit {
       message: `Are you sure you want to delete ${author.name}?`,
       header: 'Confirm',
       icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        if (author.id) {
-          this.authorService.deleteAuthor(author.id);
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Successful',
-            detail: 'Author Deleted',
-            life: 3000
-          });
-        }
-      },
+      accept: () => this.onAcceptDeleteAuthor(author),
     });
   }
 
-  saveAuthor(author: Author): void {
+  onAcceptDeleteAuthor(author: Author): void {
     if (author.id) {
-      this.authorService.updateAuthor(author);
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Successful',
-        detail: 'Author Updated',
-        life: 3000
-      });
-    } else {
-      this.authorService.addAuthor(author);
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Successful',
-        detail: 'Author Created',
-        life: 3000
-      });
+      this.loading = true;
+      this.authorService
+        .deleteAuthor(author.id)
+        .pipe(tap(() => this.onAuthorsChange()))
+        .subscribe({
+          next: (authors) => {
+            this.authors = authors;
+            this.loading = false;
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Successful',
+              detail: 'Author Deleted',
+            });
+          },
+          error: (err) => {
+            console.error(err);
+            this.loading = false;
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Author not deleted',
+            });
+          },
+        });
     }
-    this.displayDialog = false;
   }
 
   hideAuthorCreation(): void {

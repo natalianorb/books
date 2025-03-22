@@ -1,4 +1,10 @@
 export interface Author {
-  id: number;
+  id: string;
   name: string;
+}
+
+export interface AuthorDTO {
+  id: string;
+  name: string;
+  surname: string;
 }

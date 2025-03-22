@@ -35,7 +35,7 @@
               pRipple
               icon="pi pi-pencil"
               class="p-button-rounded p-button-success"
-              (click)="editAuthor(author)"
+              (click)="openAuthorEdit(author)"
               title="edit author"
             ></button>
             <button
@@ -43,6 +43,7 @@
               pRipple
               icon="pi pi-trash"
               class="p-button-rounded p-button-danger"
+              [loading]="loading"
               (click)="deleteAuthor(author)"
               title="delete author"
             ></button>
@@ -66,8 +67,8 @@
 >
   <app-create-author
     [author]="selectedAuthor"
-    (save)="saveAuthor($event)"
-    (cancel)="hideAuthorCreation()"
+    (close)="hideAuthorCreation()"
+    (saved)="onAuthorsChange()"
   >
   </app-create-author>
 </p-dialog>

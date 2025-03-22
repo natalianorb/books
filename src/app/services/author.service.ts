@@ -1,41 +1,55 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Author } from '../models/author.model';
+import { HttpClient } from '@angular/common/http';
+import { forkJoin, map, Observable, of } from 'rxjs';
+import { Author, AuthorDTO } from '../models/author.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthorService {
-  /* this is a mock of the real service */
-  private authors: Author[] = [
-    { id: 1, name: 'Rowling' },
-    { id: 2, name: 'George Martin' },
-  ];
+  private apiUrl = '/api/authors';
 
-  private authorsSubject = new BehaviorSubject<Author[]>(this.authors);
+  constructor(private http: HttpClient) {}
 
-  constructor() {}
+  getAuthorsByIds(ids: string[]): Observable<Author[]> {
+    const uniqueIds = [...new Set(ids)];
+    const requests = uniqueIds.map((id) => this.getAuthorById(id));
 
-  getAuthors(): Observable<Author[]> {
-    return this.authorsSubject.asObservable();
-  }
-
-  addAuthor(author: Author): void {
-    const newId = Date.now();
-    const newAuthor = { ...author, id: newId };
-    this.authors = [...this.authors, newAuthor];
-    this.authorsSubject.next(this.authors);
-  }
-
-  updateAuthor(updatedAuthor: Author): void {
-    if (updatedAuthor.id) {
-      this.authors = this.authors.map(author => author.id === updatedAuthor.id ? updatedAuthor : author);
-      this.authorsSubject.next(this.authors);
+    if (!requests.length) {
+      return of([]);
     }
+    return forkJoin(requests);
   }
 
-  deleteAuthor(id: number): void {
-    this.authors = this.authors.filter(author => author.id !== id);
-    this.authorsSubject.next(this.authors);
+  private getAuthorById(id: string): Observable<Author> {
+    return this.http.get<AuthorDTO>(`${this.apiUrl}/${id}`).pipe(
+      map((author) => this.transformAuthor(author)),
+    );
+  }
+
+  private transformAuthor(author: AuthorDTO): Author {
+    return {
+      id: author.id,
+      name: author.surname? `${author.name} ${author.surname}` : author.name,
+    };
+  }
+
+  loadAuthors(): Observable<Author[]> {
+    return this.http.get<AuthorDTO[]>(this.apiUrl).pipe(
+      map((authors) => authors.map(this.transformAuthor)),
+    );
+  }
+
+  createAuthor(author: Omit<Author, 'id'>): Observable<Author> {
+    return this.http
+      .post<Author>(this.apiUrl, author);
+  }
+
+  updateAuthor(author: Author): Observable<Author> {
+    return this.http.put<AuthorDTO>(`${this.apiUrl}/${author.id}`, author);
+  }
+
+  deleteAuthor(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }
