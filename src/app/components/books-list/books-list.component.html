@@ -115,7 +115,7 @@
     </ng-template>
 
     <ng-template pTemplate="body" let-book>
-      <tr (click)="openBookDialog(book)">
+      <tr (click)="openBookDialog(book)" class="cursor-pointer">
         <td>
           <span class="font-bold">{{ book.title }}</span>
         </td>

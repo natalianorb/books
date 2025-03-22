@@ -67,7 +67,7 @@ export class BooksListComponent implements OnInit {
       search: [''],
       authorsIds: [[]],
       pages: [[0, 1000]],
-      genre: [''],
+      genre: [null],
     });
   }
 
@@ -167,9 +167,9 @@ export class BooksListComponent implements OnInit {
   resetFilters(): void {
     this.filterForm.reset({
       search: '',
-      authors: [],
+      authorsIds: [],
       pages: [0, 1000],
-      genre: '',
+      genre: null,
     });
   }
 }
